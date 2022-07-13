@@ -15,11 +15,25 @@ jobs:
       - name: Checkout codebase
         uses: actions/checkout@v1
 
-      - name: Deploy to EC2 instance
-        uses: easingthemes/ssh-deploy@v2.1.5
+      - name: build docker image
+        run :
+          docker build -t nelth/ml-dash-cicd .
+      # - name: run docker image
+      #   run :
+      #     docker run nelth/ml-dash-cicd
+      - name: docker login
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SOURCE: "/"
-          REMOTE_HOST: ${{ secrets.SERVER_IP }}
-          REMOTE_USER: ${{ secrets.SERVER_USER }}
-          TARGET: "/home/${{ secrets.SERVER_USER }}/streamlit-dash"
+          USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run : |
+          docker login -u $USERNAME -p $PASSWORD
+          docker push nelth/ml-dash-cicd:latest
+
+      # - name: Deploy to EC2 instance
+      #   uses: easingthemes/ssh-deploy@v2.1.5
+      #   env:
+      #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     SOURCE: "/"
+      #     REMOTE_HOST: ${{ secrets.SERVER_IP }}
+      #     REMOTE_USER: ${{ secrets.SERVER_USER }}
+      #     TARGET: "/home/${{ secrets.SERVER_USER }}/streamlit-dash"
