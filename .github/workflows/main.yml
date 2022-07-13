@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy application on AWS EC2
+    name: Build and push docker image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codebase
@@ -18,9 +18,7 @@ jobs:
       - name: build docker image
         run :
           docker build -t nelth/ml-dash-cicd .
-      # - name: run docker image
-      #   run :
-      #     docker run nelth/ml-dash-cicd
+
       - name: docker login
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
